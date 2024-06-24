@@ -6,7 +6,7 @@
 /*   By: bmouhib <bmouhib@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/17 14:45:50 by bmouhib           #+#    #+#             */
-/*   Updated: 2024/06/19 15:44:12 by bmouhib          ###   ########.fr       */
+/*   Updated: 2024/06/21 22:45:23 by bmouhib          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,11 +18,12 @@ char	*ft_get_line(char *str)
 	char	*line;
 
 	i = 0;
-	if (!str || !*str)
+	if (!*str)
 		return (NULL);
 	while (str[i] && str[i] != '\n')
 		i++;
-	line = malloc((i + 2) * sizeof(char));
+	i += (str[i] == '\n');
+	line = malloc((i + 1) * sizeof(char));
 	if (!line)
 		return (NULL);
 	i = 0;
@@ -45,6 +46,7 @@ char	*ft_get_buffer(char *str)
 		return (NULL);
 	while (*str && *str != '\n')
 		str++;
+	str += (*str == '\n');
 	if (!*str)
 	{
 		free(ptr);
@@ -53,7 +55,6 @@ char	*ft_get_buffer(char *str)
 	line = malloc((ft_strlen(str) + 1) * sizeof(char));
 	if (!line)
 		return (NULL);
-	str++;
 	i = 0;
 	while (*str)
 		line[i++] = *str++;
@@ -74,6 +75,8 @@ char	*ft_read(int fd, char *line)
 	while (!ft_strchr(line, '\n') && read_bytes)
 	{
 		read_bytes = read(fd, buff, BUFFER_SIZE);
+		if (!read_bytes)
+			return (free(buff), line);
 		if (read_bytes < 0)
 			return (free(line), free(buff), NULL);
 		buff[read_bytes] = '\0';

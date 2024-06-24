@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line_utils.c                              :+:      :+:    :+:   */
+/*   get_next_line_utils_bonus.c                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: bmouhib <bmouhib@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/17 14:45:44 by bmouhib           #+#    #+#             */
-/*   Updated: 2024/06/19 15:03:47 by bmouhib          ###   ########.fr       */
+/*   Updated: 2024/06/21 22:06:46 by bmouhib          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,25 +39,25 @@ char	*ft_strjoin(char *s1, char *s2)
 {
 	size_t	i;
 	size_t	j;
+	size_t	len;
 	char	*s;
 
-	if (!s1)
-	{
-		s1 = (char *)malloc(sizeof(char));
-		s1[0] = '\0';
-	}
-	if (!s1 || !s2)
-		return (NULL);
-	s = malloc(sizeof(char) * ((ft_strlen(s1) + ft_strlen(s2)) + 1));
+	len = 0;
+	if (s1)
+		len = ft_strlen(s1);
+	s = malloc(sizeof(char) * (len + ft_strlen(s2) + 1));
 	if (!s)
 		return (NULL);
 	i = -1;
 	j = 0;
-	while (s1[++i] != '\0')
-		s[i] = s1[i];
+	if (s1)
+		while (s1[++i] != '\0')
+			s[i] = s1[i];
+	else
+		i = 0;
 	while (s2[j] != '\0')
 		s[i++] = s2[j++];
-	s[ft_strlen(s1) + ft_strlen(s2)] = '\0';
+	s[len + ft_strlen(s2)] = '\0';
 	free(s1);
 	return (s);
 }
