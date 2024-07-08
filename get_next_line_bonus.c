@@ -6,97 +6,60 @@
 /*   By: bmouhib <bmouhib@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/17 14:45:50 by bmouhib           #+#    #+#             */
-/*   Updated: 2024/06/21 22:45:23 by bmouhib          ###   ########.fr       */
+/*   Updated: 2024/07/05 18:04:40 by bmouhib          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
-char	*ft_get_line(char *str)
+void	ft_rectify(char *buff)
 {
-	int		i;
-	char	*line;
+	int	i;
+	int	j;
 
-	i = 0;
-	if (!*str)
-		return (NULL);
-	while (str[i] && str[i] != '\n')
-		i++;
-	i += (str[i] == '\n');
-	line = malloc((i + 1) * sizeof(char));
-	if (!line)
-		return (NULL);
-	i = 0;
-	while (*str && *str != '\n')
-		line[i++] = *str++;
-	if (*str == '\n')
-		line[i++] = *str;
-	line[i] = '\0';
-	return (line);
-}
-
-char	*ft_get_buffer(char *str)
-{
-	int		i;
-	char	*line;
-	char	*ptr;
-
-	ptr = str;
-	if (!str)
-		return (NULL);
-	while (*str && *str != '\n')
-		str++;
-	str += (*str == '\n');
-	if (!*str)
+	j = 0;
+	i = ft_strlen(buff);
+	if (!buff[i])
+		buff[0] = '\0';
+	else
 	{
-		free(ptr);
-		return (NULL);
+		while (buff[i])
+			buff[j++] = buff[i++];
+		buff[j] = '\0';
 	}
-	line = malloc((ft_strlen(str) + 1) * sizeof(char));
-	if (!line)
-		return (NULL);
-	i = 0;
-	while (*str)
-		line[i++] = *str++;
-	line[i] = '\0';
-	free(ptr);
-	return (line);
 }
 
-char	*ft_read(int fd, char *line)
+char	*ft_read(int fd, char *line, char *buffer)
 {
-	int				read_bytes;
-	char			*buff;
+	int		read_bytes;
+	int		new_line;
 
-	buff = malloc((BUFFER_SIZE + 1) * sizeof(char));
-	if (!buff)
-		return (NULL);
 	read_bytes = 1;
-	while (!ft_strchr(line, '\n') && read_bytes)
+	new_line = ft_strchr(line, '\n');
+	while (!new_line && read_bytes)
 	{
-		read_bytes = read(fd, buff, BUFFER_SIZE);
+		read_bytes = read(fd, buffer, BUFFER_SIZE);
 		if (!read_bytes)
-			return (free(buff), line);
+			return (line);
 		if (read_bytes < 0)
-			return (free(line), free(buff), NULL);
-		buff[read_bytes] = '\0';
-		line = ft_strjoin(line, buff);
+			return (free(line), NULL);
+		buffer[read_bytes] = '\0';
+		new_line = ft_strchr(buffer, '\n');
+		line = ft_strjoin(line, buffer);
+		ft_rectify(buffer);
 	}
-	free(buff);
 	return (line);
 }
 
 char	*get_next_line(int fd)
 {
 	char		*line;
-	static char	*str[4096];
+	static char	buffer[4096][BUFFER_SIZE + 1];
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
-		return (0);
-	str[fd] = ft_read(fd, str[fd]);
-	if (!str[fd])
 		return (NULL);
-	line = ft_get_line(str[fd]);
-	str[fd] = ft_get_buffer(str[fd]);
+	line = ft_strcpy(buffer[fd]);
+	ft_rectify(buffer[fd]);
+	line = ft_read(fd, line, buffer[fd]);
 	return (line);
 }

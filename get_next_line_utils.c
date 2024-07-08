@@ -6,21 +6,42 @@
 /*   By: bmouhib <bmouhib@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/17 14:45:44 by bmouhib           #+#    #+#             */
-/*   Updated: 2024/06/23 17:20:27 by bmouhib          ###   ########.fr       */
+/*   Updated: 2024/07/08 19:32:39 by bmouhib          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-char	*ft_strchr(const char *s, int c)
+int	ft_strchr(const char *s, int c)
 {
 	if (!s)
-		return (NULL);
-	while (*s && *s != (char)c)
+		return (0);
+	while (*s)
+	{
+		if (*s == (char)c)
+			return (1);
 		s++;
-	if (*s == (char)c)
-		return ((char *)s);
-	return (NULL);
+	}
+	return (0);
+}
+
+char	*ft_strcpy(char *str)
+{
+	int		i;
+	char	*cpy;
+
+	i = 0;
+	if (!str || !*str)
+		return (NULL);
+	cpy = malloc((ft_strlen(str) + 1) * sizeof(char));
+	if (!cpy)
+		return (NULL);
+	while (*str && *str != '\n')
+		cpy[i++] = *str++;
+	if (*str == '\n')
+		cpy[i++] = '\n';
+	cpy[i] = '\0';
+	return (cpy);
 }
 
 size_t	ft_strlen(const char *s)
@@ -30,34 +51,37 @@ size_t	ft_strlen(const char *s)
 	i = 0;
 	if (!s)
 		return (0);
-	while (s[i])
+	while (s[i] && s[i] != '\n')
 		i++;
+	i += (s[i] == '\n');
 	return (i);
 }
 
-char	*ft_strjoin(char *s1, char *s2)
+char	*ft_strjoin(char *line, char *buffer)
 {
 	size_t	i;
-	size_t	j;
 	size_t	len;
 	char	*s;
 
-	len = 0;
-	if (s1)
-		len = ft_strlen(s1);
-	s = malloc(sizeof(char) * (len + ft_strlen(s2) + 1));
+	len = ft_strlen(buffer) + ft_strlen(line);
+	s = malloc((len + 1) * sizeof(char));
 	if (!s)
-		return (NULL);
-	i = -1;
-	j = 0;
-	if (s1)
-		while (s1[++i] != '\0')
-			s[i] = s1[i];
-	else
-		i = 0;
-	while (s2[j] != '\0')
-		s[i++] = s2[j++];
-	s[len + ft_strlen(s2)] = '\0';
-	free(s1);
+		return (free(line), NULL);
+	i = 0;
+	if (line)
+	{
+		i--;
+		while (line[++i])
+			s[i] = line[i];
+		free(line);
+	}
+	if (buffer)
+	{
+		while (*buffer && *buffer != '\n')
+			s[i++] = *buffer++;
+		if (*buffer == '\n')
+			s[i] = '\n';
+	}
+	s[len] = '\0';
 	return (s);
 }
